@@ -39,11 +39,11 @@ public class SplittingPDF {
 			List<String> result = walk.filter(Files::isRegularFile)
 					.map(x -> x.getFileName().toString()).collect(Collectors.toList());
 
-			File folder = new File("toPdf" + SEPARATOR + "prueba");
+			File folder = new File("toPdf" + SEPARATOR + args[0]);
 			boolean success = folder.mkdirs();
 			
 			if (success) {
-				result.forEach(file -> extractImage(args[0], file));
+				result.forEach(file -> extractImage(args[0], file, result.size()));
 			}
 
 		} catch (IOException e) {
@@ -73,6 +73,7 @@ public class SplittingPDF {
 		if (success) {
 			System.out.println("Folder created");
 			while (iterator.hasNext()) {
+				System.out.println("File " + i + " of " + pages.size());
 				PDDocument pd = iterator.next();
 				PDFRenderer pr = new PDFRenderer(pd);
 			    BufferedImage bi = pr.renderImageWithDPI(0, 300);
@@ -87,14 +88,15 @@ public class SplittingPDF {
 	}
 	
 	
-	private static void extractImage(String folder, String input) {
+	private static void extractImage(String folder, String input, int total) {
+		System.out.println("Image " + input.split("\\.")[0] + " of " + total);
 		File imageFile = new File("toImage" + SEPARATOR + folder + SEPARATOR + input);
 		//System.out.println(System.getenv());
 		ITesseract instance = new Tesseract();
 		try {
 			instance.setDatapath(TESSERACT_PATH);
 			instance.setLanguage("lit"); 
-			String output = "toPdf" + SEPARATOR + "prueba" + SEPARATOR + input;
+			String output = "toPdf" + SEPARATOR + folder + SEPARATOR + input;
 			String result = instance.doOCR(imageFile);
 			PrintWriter pw = new PrintWriter(output.replace("jpg", "txt"));
 			pw.print(result);
