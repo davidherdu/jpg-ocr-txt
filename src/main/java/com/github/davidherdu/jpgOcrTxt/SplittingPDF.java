@@ -22,6 +22,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import net.sourceforge.tess4j.ITessAPI.TessPageSegMode;
 
 public class SplittingPDF {
 	
@@ -39,7 +40,7 @@ public class SplittingPDF {
 			List<String> result = walk.filter(Files::isRegularFile)
 					.map(x -> x.getFileName().toString()).collect(Collectors.toList());
 
-			File folder = new File("toPdf" + SEPARATOR + args[0]);
+			File folder = new File("toTxt" + SEPARATOR + args[0]);
 			boolean success = folder.mkdirs();
 			
 			if (success) {
@@ -96,7 +97,8 @@ public class SplittingPDF {
 		try {
 			instance.setDatapath(TESSERACT_PATH);
 			instance.setLanguage("lit"); 
-			String output = "toPdf" + SEPARATOR + folder + SEPARATOR + input;
+			instance.setPageSegMode(TessPageSegMode.PSM_AUTO);
+			String output = "toTxt" + SEPARATOR + folder + SEPARATOR + input;
 			String result = instance.doOCR(imageFile);
 			PrintWriter pw = new PrintWriter(output.replace("jpg", "txt"));
 			pw.print(result);
